@@ -29,6 +29,19 @@ namespace LuaInterface
             Data = Items;
         }
 
+        public LuaTable(IEnumerable Items, Lua Interpreter)
+            : this(0, Interpreter)
+        {
+            int I = 0;
+            Data = new Dictionary<object, object>();
+
+            foreach (object Item in Items)
+            {
+                I++;
+                Data.Add(I, Item);
+            }
+        }
+
         #region Indexers
         public object this[string Field]
         {
@@ -163,7 +176,7 @@ namespace LuaInterface
         /// <summary>
         /// Pushes this table into the Lua stack
         /// </summary>
-        internal void Push(KopiLua.LuaState LuaState)
+        public override void Push(KopiLua.LuaState LuaState, ObjectTranslator Translator = null)
         {
             if (_Reference != 0)
             {

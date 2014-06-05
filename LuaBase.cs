@@ -52,12 +52,12 @@ namespace LuaInterface
         }
 
         #region ILuaPushable
-        public void Push(KopiLua.LuaState State, ObjectTranslator Translator)
+        public virtual void Push(KopiLua.LuaState State, ObjectTranslator Translator)
         {
             throw new NotImplementedException();
         }
 
-        public void Push(Lua LuaInstance)
+        public virtual void Push(Lua LuaInstance)
         {
             Push(LuaInstance.LuaState, LuaInstance.Translator);
         }

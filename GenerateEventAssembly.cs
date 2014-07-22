@@ -23,7 +23,7 @@ namespace LuaInterface
     /// </summary>
     public interface ILuaGeneratedType
     {
-        LuaTable __LuaInterface_getLuaTable();
+        LuaTable GetLuaTable();
     }
 
     /// <summary>

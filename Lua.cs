@@ -13,7 +13,7 @@ namespace LuaInterface
     /// </summary>
     public class Lua : IDisposable
     {
-        readonly static string InitLuaNet =
+        const string InitLuaNet =
         @"local metatable = {}
         local rawget = rawget
         local import_type = luanet.import_type
@@ -66,8 +66,8 @@ namespace LuaInterface
         }
 
 
-        KopiLua.LuaNativeFunction _PanicCallback;
-        KopiLua.LuaNativeFunction TracebackFunction;
+        protected KopiLua.LuaNativeFunction _PanicCallback;
+        protected KopiLua.LuaNativeFunction TracebackFunction;
 
         public Lua()
         {
@@ -154,37 +154,23 @@ namespace LuaInterface
             }
             //LuaState = IntPtr.Zero; <- suggested by Christopher Cebulski http://luaforge.net/forum/forum.php?thread_id=44593&forum_id=146
         }
-
+        #region Error handling
         /// <summary>
-        /// Called for each lua_lock call 
+        /// Called when Lua panics
         /// </summary>
         /// <param name="LuaState"></param>
-        /// Not yet used
-        int LockCallback(KopiLua.LuaState LuaState)
+        /// <returns>Nothing</returns>
+        /// <exception cref="LuaException">Thrown if panic occurs</exception>
+        protected static int PanicCallback(KopiLua.LuaState LuaState)
         {
-            return 0;
-        }
-
-        /// <summary>
-        /// Called for each lua_unlock call 
-        /// </summary>
-        /// <param name="LuaState"></param>
-        /// Not yet used
-        int UnlockCallback(KopiLua.LuaState LuaState)
-        {
-            return 0;
-        }
-
-        static int PanicCallback(KopiLua.LuaState LuaState)
-        {
-            throw new LuaException(String.Format("unprotected error in call to Lua API ({0})", LuaCore.LuaToString(LuaState, -1)));
+            throw new LuaException(String.Format("Unprotected error in call to Lua API ({0})", LuaCore.LuaToString(LuaState, -1)));
         }
 
         /// <summary>
         /// Assuming we have a Lua error string sitting on the stack, throw a C# exception out to the user's app
         /// </summary>
         /// <exception cref="LuaScriptException">Thrown if the script caused an exception</exception>
-        void ThrowExceptionFromError(int OldTop)
+        protected void ThrowExceptionFromError(int OldTop)
         {
             object Err = Translator.GetObject(LuaState, -1);
             LuaCore.LuaSetTop(LuaState, OldTop);
@@ -201,7 +187,7 @@ namespace LuaInterface
         /// <summary>
         /// Convert C# exceptions into Lua errors
         /// </summary>
-        /// <returns>num of things on stack</returns>
+        /// <returns>Num of things on stack</returns>
         /// <param name="e">null for no pending exception</param>
         internal int SetPendingException(Exception e)
         {
@@ -217,6 +203,7 @@ namespace LuaInterface
 
             return 0;
         }
+        #endregion
         #region Execution
         private bool Executing;
 
@@ -388,7 +375,7 @@ namespace LuaInterface
             }
         }
 
-        #region Globals auto-complete
+        #region Globals
         private readonly List<string> _Globals = new List<string>();
         private bool GlobalsSorted;
 

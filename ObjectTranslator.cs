@@ -925,19 +925,11 @@ namespace LuaInterface
             }
             else if (IsILua(Obj))
             {
-                (((ILuaGeneratedType)Obj).__LuaInterface_getLuaTable()).Push(LuaState);
-            }
-            else if (Obj is LuaTable)
-            {
-                ((LuaTable)Obj).Push(LuaState);
+                (((ILuaGeneratedType)Obj).GetLuaTable()).Push(LuaState, this);
             }
             else if (Obj is KopiLua.LuaNativeFunction)
             {
                 PushFunction(LuaState, (KopiLua.LuaNativeFunction)Obj);
-            }
-            else if (Obj is LuaFunction)
-            {
-                ((LuaFunction)Obj).Push(LuaState);
             }
             else if (Obj is ILuaPushable)
             {

@@ -13,23 +13,23 @@ namespace LuaInterface
 
         public LuaTable(int Reference, Lua Interpreter)
         {
-            _Reference = Reference;
-            _Interpreter = Interpreter;
+            this.Reference = Reference;
+            this.LuaInstance = Interpreter;
         }
 
         public LuaTable(Lua Interpreter)
-            : this(0, Interpreter)
+            : this(0, Interpreter = null)
         {
             Data = new Dictionary<object, object>();
         }
 
-        public LuaTable(IDictionary Items, Lua Interpreter)
+        public LuaTable(IDictionary Items, Lua Interpreter = null)
             : this(0, Interpreter)
         {
             Data = Items;
         }
 
-        public LuaTable(IEnumerable Items, Lua Interpreter)
+        public LuaTable(IEnumerable Items, Lua Interpreter = null)
             : this(0, Interpreter)
         {
             int I = 0;
@@ -47,9 +47,9 @@ namespace LuaInterface
         {
             get
             {
-                if (_Reference != 0)
+                if (Reference != 0)
                 {
-                    return _Interpreter.GetObject(_Reference, Field);
+                    return LuaInstance.GetObject(Reference, Field);
                 }
                 else
                 {
@@ -58,9 +58,9 @@ namespace LuaInterface
             }
             set
             {
-                if (_Reference != 0)
+                if (Reference != 0)
                 {
-                    _Interpreter.SetObject(_Reference, Field, value);
+                    LuaInstance.SetObject(Reference, Field, value);
                 }
                 else
                 {
@@ -76,9 +76,9 @@ namespace LuaInterface
         {
             get
             {
-                if (_Reference != 0)
+                if (Reference != 0)
                 {
-                    return _Interpreter.GetObject(_Reference, Field);
+                    return LuaInstance.GetObject(Reference, Field);
                 }
                 else
                 {
@@ -87,9 +87,9 @@ namespace LuaInterface
             }
             set
             {
-                if (_Reference != 0)
+                if (Reference != 0)
                 {
-                    _Interpreter.SetObject(_Reference, Field, value);
+                    LuaInstance.SetObject(Reference, Field, value);
                 }
                 else
                 {
@@ -102,9 +102,9 @@ namespace LuaInterface
         #region IDictionary Methods
         public System.Collections.IDictionaryEnumerator GetEnumerator()
         {
-            if (_Reference != 0)
+            if (Reference != 0)
             {
-                return _Interpreter.GetTableDict(this).GetEnumerator();
+                return LuaInstance.GetTableDict(this).GetEnumerator();
             }
             else
             {
@@ -116,9 +116,9 @@ namespace LuaInterface
         {
             get
             {
-                if (_Reference != 0)
+                if (Reference != 0)
                 {
-                    return _Interpreter.GetTableDict(this).Keys;
+                    return LuaInstance.GetTableDict(this).Keys;
                 }
                 else
                 {
@@ -131,9 +131,9 @@ namespace LuaInterface
         {
             get
             {
-                if (_Reference != 0)
+                if (Reference != 0)
                 {
-                    return _Interpreter.GetTableDict(this).Values;
+                    return LuaInstance.GetTableDict(this).Values;
                 }
                 else
                 {
@@ -148,13 +148,13 @@ namespace LuaInterface
         /// </summary>
         internal object RawGet(string Field)
         {
-            if (_Reference != 0)
+            if (Reference != 0)
             {
-                return _Interpreter.RawGetObject(_Reference, Field);
+                return LuaInstance.RawGetObject(Reference, Field);
             }
             else
             {
-                return _Interpreter[Field];
+                return LuaInstance[Field];
             }
             
         }
@@ -165,7 +165,7 @@ namespace LuaInterface
 
             if (Obj is KopiLua.LuaNativeFunction)
             {
-                return new LuaFunction((KopiLua.LuaNativeFunction)Obj, _Interpreter);
+                return new LuaFunction((KopiLua.LuaNativeFunction)Obj, LuaInstance);
             }
             else
             {
@@ -176,19 +176,19 @@ namespace LuaInterface
         /// <summary>
         /// Pushes this table into the Lua stack
         /// </summary>
-        public override void Push(KopiLua.LuaState LuaState, ObjectTranslator Translator = null)
+        public override void Push(KopiLua.LuaState LuaState, ObjectTranslator Translator)
         {
-            if (_Reference != 0)
+            if (Reference != 0)
             {
-                LuaCore.LuaGetRef(LuaState, _Reference);
+                LuaCore.LuaGetRef(LuaState, Reference);
             }
             else
             {
                 LuaCore.LuaNewTable(LuaState);
                 foreach (DictionaryEntry Item in Data)
                 {
-                    _Interpreter.Push(Item.Key);
-                    _Interpreter.Push(Item.Value);
+                    Translator.Push(LuaState, Item.Key);
+                    Translator.Push(LuaState, Item.Value);
                     LuaCore.LuaSetTable(LuaState, -3);
                 }
             }

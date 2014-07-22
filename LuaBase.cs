@@ -7,9 +7,15 @@ namespace LuaInterface
     /// </summary>
     public abstract class LuaBase : IDisposable, ILuaPushable
     {
-        private bool _Disposed;
-        protected int _Reference;
-        protected Lua _Interpreter;
+        private bool Disposed;
+        protected int Reference;
+        protected Lua LuaInstance;
+
+        public LuaBase(int Reference = 0, Lua LuaInstance = null)
+        {
+            this.Reference = Reference;
+            this.LuaInstance = LuaInstance;
+        }
 
         ~LuaBase()
         {
@@ -24,15 +30,15 @@ namespace LuaInterface
 
         public virtual void Dispose(bool disposeManagedResources)
         {
-            if (!_Disposed)
+            if (!Disposed)
             {
                 if (disposeManagedResources)
                 {
-                    if (_Reference != 0)
-                        _Interpreter.DisposeObject(_Reference);
+                    if (Reference != 0)
+                        LuaInstance.DisposeObject(Reference);
                 }
-                _Interpreter = null;
-                _Disposed = true;
+                LuaInstance = null;
+                Disposed = true;
             }
         }
 
@@ -41,14 +47,14 @@ namespace LuaInterface
             if (Obj is LuaBase)
             {
                 LuaBase LuaObj = (LuaBase)Obj;
-                return _Interpreter.CompareRef(LuaObj._Reference, _Reference);
+                return LuaInstance.CompareRef(LuaObj.Reference, Reference);
             }
             else return false;
         }
 
         public override int GetHashCode()
         {
-            return _Reference;
+            return Reference;
         }
 
         #region ILuaPushable
@@ -57,9 +63,14 @@ namespace LuaInterface
             throw new NotImplementedException();
         }
 
-        public virtual void Push(Lua LuaInstance)
+        public void Push(Lua LuaInstance)
         {
             Push(LuaInstance.LuaState, LuaInstance.Translator);
+        }
+
+        public void Push()
+        {
+            Push(LuaInstance);
         }
         #endregion
 

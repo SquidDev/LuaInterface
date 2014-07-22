@@ -6,8 +6,8 @@ namespace LuaInterface
 
         public LuaUserData(int reference, Lua interpreter)
         {
-            _Reference = reference;
-            _Interpreter = interpreter;
+            Reference = reference;
+            LuaInstance = interpreter;
         }
 
         /// <summary>
@@ -17,11 +17,11 @@ namespace LuaInterface
         {
             get
             {
-                return _Interpreter.GetObject(_Reference, Field);
+                return LuaInstance.GetObject(Reference, Field);
             }
             set
             {
-                _Interpreter.SetObject(_Reference, Field, value);
+                LuaInstance.SetObject(Reference, Field, value);
             }
         }
         
@@ -32,11 +32,11 @@ namespace LuaInterface
         {
             get
             {
-                return _Interpreter.GetObject(_Reference, Field);
+                return LuaInstance.GetObject(Reference, Field);
             }
             set
             {
-                _Interpreter.SetObject(_Reference, Field, value);
+                LuaInstance.SetObject(Reference, Field, value);
             }
         }
         
@@ -45,7 +45,7 @@ namespace LuaInterface
         /// </summary>
         public object[] Call(params object[] Args)
         {
-            return _Interpreter.CallFunction(this, Args);
+            return LuaInstance.CallFunction(this, Args);
         }
         
         /// <summary>
@@ -53,7 +53,7 @@ namespace LuaInterface
         /// </summary>
         internal void Push(KopiLua.LuaState LuaState)
         {
-            LuaCore.LuaGetRef(LuaState, _Reference);
+            LuaCore.LuaGetRef(LuaState, Reference);
         }
 
         public override string ToString()

@@ -4,22 +4,16 @@ namespace LuaInterface
 {
     public class LuaFunction : LuaBase
     {
-        //private Lua interpreter;
         internal KopiLua.LuaNativeFunction Function;
-        //internal int reference;
 
-        public LuaFunction(int Reference, Lua Interpreter)
+        public LuaFunction(int Reference, Lua LuaInstance) : base(Reference, LuaInstance)
         {
-            _Reference = Reference;
-            this.Function = null;
-            _Interpreter = Interpreter;
+            Function = null;
         }
 
-        public LuaFunction(KopiLua.LuaNativeFunction Function, Lua Interpreter)
+        public LuaFunction(KopiLua.LuaNativeFunction Function, Lua LuaInstance) : base(0, LuaInstance)
         {
-            _Reference = 0;
             this.Function = Function;
-            _Interpreter = Interpreter;
         }
 
         /// <summary>
@@ -27,7 +21,7 @@ namespace LuaInterface
         /// </summary>
         internal object[] Call(object[] Args, Type[] ReturnTypes)
         {
-            return _Interpreter.CallFunction(this, Args, ReturnTypes);
+            return LuaInstance.CallFunction(this, Args, ReturnTypes);
         }
         
         /// <summary>
@@ -35,7 +29,7 @@ namespace LuaInterface
         /// </summary>
         public object[] Call(params object[] Args)
         {
-            return _Interpreter.CallFunction(this, Args);
+            return LuaInstance.CallFunction(this, Args);
         }
         
         /// <summary>
@@ -43,13 +37,13 @@ namespace LuaInterface
         /// </summary>
         public void Push(KopiLua.LuaState LuaState)
         {
-            if (_Reference != 0)
+            if (Reference != 0)
             {
-                LuaCore.LuaGetRef(LuaState, _Reference);
+                LuaCore.LuaGetRef(LuaState, Reference);
             }
             else
             {
-                _Interpreter.PushCSFunction(Function);
+                LuaInstance.PushCSFunction(Function);
             }
         }
 
@@ -63,9 +57,9 @@ namespace LuaInterface
             if (Obj is LuaFunction)
             {
                 LuaFunction l = (LuaFunction)Obj;
-                if (this._Reference != 0 && l._Reference != 0)
+                if (this.Reference != 0 && l.Reference != 0)
                 {
-                    return _Interpreter.CompareRef(l._Reference, this._Reference);
+                    return LuaInstance.CompareRef(l.Reference, this.Reference);
                 }
                 else
                 {
@@ -76,9 +70,9 @@ namespace LuaInterface
         }
         public override int GetHashCode()
         {
-            if (_Reference != 0)
+            if (Reference != 0)
             {
-                return _Reference;
+                return Reference;
             }
             else
             {

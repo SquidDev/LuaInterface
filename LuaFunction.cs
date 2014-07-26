@@ -31,6 +31,11 @@ namespace LuaInterface
         {
             return LuaInstance.CallFunction(this, Args);
         }
+
+        public override void Push(KopiLua.LuaState State, ObjectTranslator Translator)
+        {
+            Push(State);
+        }
         
         /// <summary>
         /// Pushes the function into the Lua stack

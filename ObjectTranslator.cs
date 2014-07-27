@@ -546,7 +546,8 @@ namespace LuaInterface
         /// </summary>
         internal void PushFunction(KopiLua.LuaState LuaState, KopiLua.LuaNativeFunction Function)
         {
-            PushObject(LuaState, Function, "luaNet_function");
+            //PushObject(LuaState, Function, "luaNet_function");
+            KopiLua.Lua.LuaPushCFunction(LuaState, Function);
         }
 
         /// <summary>

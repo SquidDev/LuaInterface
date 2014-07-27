@@ -802,7 +802,7 @@ namespace LuaInterface
 
             this.Close();
             System.GC.Collect();
-            System.GC.WaitForPendingFinalizers();
+            //System.GC.WaitForPendingFinalizers();
         }
 
         #endregion

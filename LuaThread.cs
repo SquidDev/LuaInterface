@@ -40,10 +40,10 @@ namespace LuaInterface
             return Resume(Args.Length, OldTop);
         }
 
-        public LuaThreadResume DoThreadedString(string Chunk)
+        public LuaThreadResume DoThreadedString(string Chunk, string ChunkName = "chunk")
         {
             int OldTop = LuaCore.LuaGetTop(LuaState);
-            LuaCore.LuaLLoadBuffer(LuaState, Chunk, Chunk.Length, "chunk");
+            LuaCore.LuaLLoadBuffer(LuaState, Chunk, Chunk.Length, ChunkName);
             return Resume(0, OldTop);
         }
     }
